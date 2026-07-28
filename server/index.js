@@ -111,26 +111,59 @@ async function saveGameElo(game) {
 }
 
 io.use(async (socket, next) => {
-  const token = socket.handshake.auth.token;
+  const token = socket.handshake.auth?.token;
+
+  console.log(
+    "Token socket reçu :",
+    token ? "oui" : "non"
+  );
 
   if (!token) {
     return next(new Error("Token manquant"));
   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  let decoded;
 
+  try {
+    decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
+
+    console.log("JWT décodé :", decoded);
+  } catch (error) {
+    console.error(
+      "Erreur de vérification JWT :",
+      error.message
+    );
+
+    return next(
+      new Error(`Token invalide : ${error.message}`)
+    );
+  }
+
+  try {
     const user = await getMe(decoded.id);
 
+    console.log("Utilisateur Socket.IO :", user);
+
     if (!user) {
-      return next(new Error("Utilisateur introuvable"));
+      return next(
+        new Error("Utilisateur introuvable")
+      );
     }
 
     socket.user = user;
+    return next();
+  } catch (error) {
+    console.error(
+      "Erreur getMe Socket.IO :",
+      error
+    );
 
-    next();
-  } catch (err) {
-    next(new Error("Token invalide"));
+    return next(
+      new Error("Erreur lors du chargement utilisateur")
+    );
   }
 });
 
