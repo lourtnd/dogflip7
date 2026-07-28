@@ -1,45 +1,57 @@
 require("dotenv").config();
-const authRoutes = require("./routes/auth");
 
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io");
-
 const jwt = require("jsonwebtoken");
 
+const authRoutes = require("./routes/auth");
+
 const app = express();
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://dogflip7-client.onrender.com",
+];
+
+const corsOptions = {
+  origin(origin, callback) {
+    console.log("Origin reçue :", origin);
+
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(
+      new Error(`Origin CORS refusée : ${origin}`)
+    );
+  },
+  methods: [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+  ],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+  ],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
+
 app.use("/api/auth", authRoutes);
-
-const {
-  DEFAULT_DECK_CONFIG,
-} = require("./game/defaultDeckConfig");
-const { createDeck } = require("./game/core/deck");
-const Game = require("./game/core/Game");
-
-const { getMe } = require("./services/authService");
-
-console.log(
-  "DEFAULT_DECK_CONFIG SERVEUR :",
-  JSON.stringify(DEFAULT_DECK_CONFIG, null, 2)
-);
-
-const CLIENT_URL =
-  process.env.CLIENT_URL || "http://localhost:5173";
-
-app.use(
-  cors({
-    origin: CLIENT_URL,
-    credentials: true,
-  })
-);
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: CLIENT_URL,
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true,
   },
