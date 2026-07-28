@@ -59,6 +59,11 @@ const io = new Server(server, {
   },
 });
 
+const {
+  DEFAULT_DECK_CONFIG,
+} = require("./game/defaultDeckConfig");
+const Game = require("./game/core/Game");
+
 const pool = require("./db/pool");
 const rooms = {};
 const games = {};
