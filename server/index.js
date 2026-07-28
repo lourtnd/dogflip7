@@ -8,6 +8,8 @@ const jwt = require("jsonwebtoken");
 
 const authRoutes = require("./routes/auth");
 
+const { getMe } = require("./services/authService");
+
 const app = express();
 
 const allowedOrigins = [
