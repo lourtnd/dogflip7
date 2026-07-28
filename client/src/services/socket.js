@@ -6,6 +6,8 @@ const API_URL =
 
 const socket = io(API_URL, {
   autoConnect: false,
+  transports: ["polling", "websocket"],
 });
+
 
 export default socket;

@@ -3,9 +3,9 @@ const bcrypt = require("bcrypt");
 const pool = require("./db/pool");
 
 async function createUser() {
-  const username = "gustave";
-  const password = "sitesla";
-  const displayName = "Gustave";
+  const username = "lou";
+  const password = "petitchatrungis";
+  const displayName = "Lou";
 
   const passwordHash = await bcrypt.hash(password, 10);
 
