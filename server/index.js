@@ -35,11 +35,8 @@ app.use(
   })
 );
 
-
-
-const pool = require("./db/pool");
-
 const server = http.createServer(app);
+
 const io = new Server(server, {
   cors: {
     origin: CLIENT_URL,
@@ -48,6 +45,7 @@ const io = new Server(server, {
   },
 });
 
+const pool = require("./db/pool");
 const rooms = {};
 const games = {};
 
