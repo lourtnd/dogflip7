@@ -9,7 +9,6 @@ const { Server } = require("socket.io");
 const jwt = require("jsonwebtoken");
 
 const app = express();
-app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 
@@ -26,16 +25,28 @@ console.log(
   JSON.stringify(DEFAULT_DECK_CONFIG, null, 2)
 );
 
+const CLIENT_URL =
+  process.env.CLIENT_URL || "http://localhost:5173";
+
+app.use(
+  cors({
+    origin: CLIENT_URL,
+    credentials: true,
+  })
+);
+
+const io = new Server(server, {
+  cors: {
+    origin: CLIENT_URL,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+
 const pool = require("./db/pool");
 
 const server = http.createServer(app);
 
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"],
-  },
-});
 
 const rooms = {};
 const games = {};
@@ -753,6 +764,8 @@ app.get("/", (req, res) => {
   res.send("Serveur dogflip7 OK");
 });
 
-server.listen(3000, () => {
-  console.log("Serveur lancé sur http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`Serveur lancé sur le port ${PORT}`);
 });
