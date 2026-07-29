@@ -459,7 +459,7 @@ function Game() {
                 >
                   <div className="player-header">
                     <h3>
-                      {player.username}
+                      {player.displayName}
                       {isMe ? " (toi)" : ""}
                     </h3>
 
